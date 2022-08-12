@@ -71,3 +71,13 @@ fun resetWorlds() {
     }
     Bukkit.spigot().restart()
 }
+
+fun color(color: String): String {
+    return when (color) {
+        "red" -> "<color:#cc0000>"
+        "lightblue" -> "<color:#2986cc>"
+        "darkblue" -> "<color:#0b5394>"
+        "yellow" -> "<color:#ffd966>"
+        else -> "<color:#3d85c6>"
+    }
+}
