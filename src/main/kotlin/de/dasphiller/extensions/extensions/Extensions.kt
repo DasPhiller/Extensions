@@ -78,6 +78,7 @@ fun color(color: String): String {
         "lightblue" -> "<color:#2986cc>"
         "darkblue" -> "<color:#0b5394>"
         "yellow" -> "<color:#ffd966>"
+        "gray" -> "<color:#999999>"
         else -> "<color:#3d85c6>"
     }
 }
