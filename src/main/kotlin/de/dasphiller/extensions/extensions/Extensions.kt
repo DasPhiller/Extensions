@@ -1,7 +1,13 @@
 package de.dasphiller.extensions.extensions
 
+import net.axay.kspigot.extensions.bukkit.toComponent
 import net.axay.kspigot.extensions.onlinePlayers
+import net.axay.kspigot.items.itemStack
+import net.axay.kspigot.items.meta
+import net.axay.kspigot.items.setLore
 import net.axay.kspigot.main.KSpigotMainInstance
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.inventory.ItemStack
@@ -12,7 +18,10 @@ import org.bukkit.Material.AIR
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.World
 import org.bukkit.WorldCreator
+import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.EntityType
+import java.util.ArrayList
+import java.util.Arrays
 
 fun location(world: String, x: Int, y: Int, z: Int): Location {
     if (!Bukkit.getWorlds().contains(Bukkit.getWorld(world))) throw NullPointerException("World $world is null!")
@@ -85,5 +94,15 @@ fun color(color: String): String {
         "black" -> "<color:#090909>"
         "orange" -> "<color:#FF7F11>"
         else -> "<color:#3d85c6>"
+    }
+}
+
+fun itemBuilder(item: Material = Material.DIRT, name: Component = Component.text(item.name), amount: Int = 1, enchantment: Enchantment? = null, enchantmentLevel: Int = 1, lore: List<Component>) = itemStack(item) {
+    this.amount = amount
+    meta {
+        displayName(name.decoration(TextDecoration.ITALIC, false))
+
+        if (enchantment != null) addEnchant(enchantment, enchantmentLevel, true)
+        lore(lore)
     }
 }
