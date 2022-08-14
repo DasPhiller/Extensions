@@ -1,5 +1,7 @@
 package de.dasphiller.extensions.extensions
 
+import com.mojang.authlib.GameProfile
+import com.mojang.authlib.properties.Property
 import net.axay.kspigot.extensions.bukkit.toComponent
 import net.axay.kspigot.extensions.onlinePlayers
 import net.axay.kspigot.items.itemStack
@@ -20,13 +22,16 @@ import org.bukkit.World
 import org.bukkit.WorldCreator
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.EntityType
-import java.util.ArrayList
-import java.util.Arrays
+import org.bukkit.inventory.meta.SkullMeta
+import java.lang.reflect.Field
+import java.util.*
+import kotlin.Comparator
 
 fun location(world: String, x: Int, y: Int, z: Int): Location {
     if (!Bukkit.getWorlds().contains(Bukkit.getWorld(world))) throw NullPointerException("World $world is null!")
     return Location(Bukkit.getWorld(world), x.toDouble(), y.toDouble(), z.toDouble())
 }
+
 fun dropItem(location: Location, item: Material) {
     if (item == AIR) throw NullPointerException("Air can't drop")
     location.block.world.dropItem(location, ItemStack(item))
@@ -93,16 +98,45 @@ fun color(color: String): String {
         "candypink" -> "<color:#DB6C79>"
         "black" -> "<color:#090909>"
         "orange" -> "<color:#FF7F11>"
+        "purpleblue" -> "<color:#5000ff>"
         else -> "<color:#3d85c6>"
     }
 }
 
-fun itemBuilder(item: Material = Material.DIRT, name: Component = Component.text(item.name), amount: Int = 1, enchantment: Enchantment? = null, enchantmentLevel: Int = 1, lore: List<Component>) = itemStack(item) {
+fun itemBuilder(
+    item: Material = Material.DIRT,
+    name: Component = Component.text(item.name),
+    amount: Int = 1,
+    enchantment: Enchantment? = null,
+    enchantmentLevel: Int = 1,
+    lore: List<Component>? = null,
+    base64: String = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0In19fQ=="
+) = itemStack(item) {
     this.amount = amount
-    meta {
-        displayName(name.decoration(TextDecoration.ITALIC, false))
+    if (item != Material.PLAYER_HEAD) {
+        meta {
+            displayName(name.decoration(TextDecoration.ITALIC, false))
 
-        if (enchantment != null) addEnchant(enchantment, enchantmentLevel, true)
-        lore(lore)
+            if (enchantment != null) addEnchant(enchantment, enchantmentLevel, true)
+            if (lore != null) lore(lore)
+        }
+    } else {
+        meta<SkullMeta> {
+            displayName(name.decoration(TextDecoration.ITALIC, false))
+
+            if (enchantment != null) addEnchant(enchantment, enchantmentLevel, true)
+            if (lore != null) lore(lore)
+
+            itemMeta = skull(this, base64)
+        }
     }
+}
+
+fun skull(meta: SkullMeta, base64: String): SkullMeta {
+    val profile = GameProfile(UUID.randomUUID(), "")
+    profile.properties.put("textures", Property("textures", base64))
+    val profileField = meta.javaClass.getDeclaredField("profile")
+    profileField.isAccessible = true
+    profileField[meta] = profile
+    return meta
 }
