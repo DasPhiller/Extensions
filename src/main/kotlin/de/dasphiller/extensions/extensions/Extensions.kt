@@ -99,6 +99,10 @@ fun color(color: String): String {
         "black" -> "<color:#090909>"
         "orange" -> "<color:#FF7F11>"
         "purpleblue" -> "<color:#5000ff>"
+        "ferngreen" -> "<color:#6C7D47>"
+        "jet" -> "<color:#333333>"
+        "lightbrown" -> "<color:#D4A373>"
+        "starlight" -> "<color:#FEFAE0>"
         else -> "<color:#3d85c6>"
     }
 }
